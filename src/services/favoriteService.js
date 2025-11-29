@@ -7,25 +7,24 @@ class FavoriteService {
         .from('fish_favorites')
         .select(`
           *,
-          fishes (
-            *,
-            fish_categories (
-              id,
-              name,
-              type
-            )
-          )
-        `)
+          fishes (*)
+        `) // <-- PERBAIKAN: Hanya ambil data fishes, hapus fish_categories
         .eq('user_identifier', userIdentifier)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
+      // Filter jika ada data fishes yang null (misal ikan sudah dihapus admin)
+      const validFavorites = data
+        ?.map(fav => fav.fishes)
+        .filter(fish => fish !== null) || [];
+
       return {
         success: true,
-        data: data?.map(fav => fav.fishes) || []
+        data: validFavorites
       };
     } catch (error) {
+      console.error("Error fetching favorites:", error);
       return {
         success: false,
         message: error.message,
@@ -36,16 +35,16 @@ class FavoriteService {
 
   async toggleFavorite(fishId, userIdentifier) {
     try {
-      // Check if already favorited
+      // 1. Cek apakah sudah ada di favorit
       const { data: existing } = await supabase
         .from('fish_favorites')
         .select('id')
         .eq('fish_id', fishId)
         .eq('user_identifier', userIdentifier)
-        .single();
+        .maybeSingle(); // Gunakan maybeSingle agar tidak error jika kosong
 
       if (existing) {
-        // Remove from favorites
+        // HAPUS (Unfavorite)
         const { error } = await supabase
           .from('fish_favorites')
           .delete()
@@ -58,7 +57,7 @@ class FavoriteService {
           data: { isFavorited: false }
         };
       } else {
-        // Add to favorites
+        // TAMBAH (Favorite)
         const { error } = await supabase
           .from('fish_favorites')
           .insert([{
@@ -74,6 +73,7 @@ class FavoriteService {
         };
       }
     } catch (error) {
+      console.error("Error toggling favorite:", error);
       return {
         success: false,
         message: error.message
@@ -88,7 +88,9 @@ class FavoriteService {
         .select('id')
         .eq('fish_id', fishId)
         .eq('user_identifier', userIdentifier)
-        .single();
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') throw error;
 
       return {
         success: true,
@@ -96,7 +98,7 @@ class FavoriteService {
       };
     } catch (error) {
       return {
-        success: true,
+        success: true, // Return true sukses tapi datanya false
         data: { isFavorited: false }
       };
     }
