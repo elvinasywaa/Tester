@@ -71,12 +71,7 @@ export async function getAllFish({
 export async function getFishById(id) {
   const { data, error } = await supabase
     .from("fishes")
-    .select(`
-      *,
-      fish_categories (
-        name
-      )
-    `)
+    .select("*") // Ambil data ikan saja, tanpa join kategori
     .eq("id", id)
     .single();
 
