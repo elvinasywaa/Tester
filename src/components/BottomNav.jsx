@@ -1,4 +1,3 @@
-// Kode baru
 import { Home, Droplet, Waves, Heart, User } from 'lucide-react';
 
 export default function BottomNav({ currentPage, onNavigate }) {
@@ -11,11 +10,8 @@ export default function BottomNav({ currentPage, onNavigate }) {
   ];
 
   return (
-    // Container Navigasi:
-    // - md:hidden: Hilang di layar desktop (karena pakai Sidebar)
-    // - fixed bottom-6: Mengambang di atas bawah layar
-    // - backdrop-blur-xl & bg-white/65: Efek kaca buram (Glassmorphism)
-    <nav className="md:hidden fixed bottom-6 left-4 right-4 h-20 bg-white/65 backdrop-blur-xl border border-white/50 rounded-3xl z-50 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] flex justify-between items-center px-6 transition-all">
+    // PERBAIKAN: z-[100] ditambahkan agar navigasi selalu di atas PWA Badge/Toast
+    <nav className="md:hidden fixed bottom-6 left-4 right-4 h-20 bg-white/75 backdrop-blur-xl border border-white/50 rounded-3xl z-[100] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] flex justify-between items-center px-4 transition-all">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = currentPage === item.id;
@@ -28,7 +24,7 @@ export default function BottomNav({ currentPage, onNavigate }) {
               isActive ? '-translate-y-3' : ''
             }`}
           >
-            {/* Background Indikator Aktif (Kotak Miring di belakang ikon) */}
+            {/* Background Indikator Aktif */}
             <div className={`absolute inset-0 rounded-2xl transition-all duration-500 ${
               isActive 
                 ? 'bg-[#6ECBD7] shadow-[0_8px_16px_rgba(110,203,215,0.4)] rotate-12 scale-110' 
@@ -44,7 +40,7 @@ export default function BottomNav({ currentPage, onNavigate }) {
               }`}
             />
             
-            {/* Label (Pill) yang muncul di bawah saat aktif */}
+            {/* Label (Pill) */}
             <span className={`absolute -bottom-8 text-[10px] font-bold text-[#1A2C42] bg-white/90 px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap transition-all duration-500 ${
                isActive ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-2 scale-50 pointer-events-none'
             }`}>
