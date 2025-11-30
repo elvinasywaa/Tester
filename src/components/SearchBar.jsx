@@ -1,14 +1,24 @@
-// Kode baru
 import { Search, X } from 'lucide-react';
 import { useState } from 'react';
 
-export default function SearchBar({ onSearch, placeholder = "Cari ikan..." }) {
+// Tambahkan prop 'onEnter'
+export default function SearchBar({ onSearch, onEnter, placeholder = "Cari ikan..." }) {
   const [query, setQuery] = useState('');
 
   const handleSearch = (value) => {
     setQuery(value);
     if (onSearch) {
       onSearch(value);
+    }
+  };
+
+  // --- FUNGSI BARU: Deteksi Tombol Enter ---
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && query.trim()) {
+      // Panggil fungsi onEnter jika user menekan Enter dan ada teks
+      if (onEnter) {
+        onEnter(query);
+      }
     }
   };
 
@@ -28,6 +38,7 @@ export default function SearchBar({ onSearch, placeholder = "Cari ikan..." }) {
         type="text"
         value={query}
         onChange={(e) => handleSearch(e.target.value)}
+        onKeyDown={handleKeyDown} // <--- Pasang handler di sini
         placeholder={placeholder}
         className="w-full pl-12 pr-12 py-4 bg-white/50 backdrop-blur-xl border border-white/60 rounded-2xl 
                    focus:ring-2 focus:ring-aqua-main/50 focus:border-aqua-main/50 focus:bg-white/70
@@ -45,4 +56,3 @@ export default function SearchBar({ onSearch, placeholder = "Cari ikan..." }) {
     </div>
   );
 }
-
